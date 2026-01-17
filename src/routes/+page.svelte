@@ -1,59 +1,100 @@
 <script lang="ts">
+    //Imports
     import UploadDialog from "../components/UploadDialog.svelte";
+    import Overlay from "../components/DialogOverlay.svelte"
+    import PostComponent from "../components/PostComponent.svelte"
 
-    class Upload {
-        file: string;
+
+    class Post {
+        image: myImage;
         text: string;
         uploader: User;
-        tags: Array<string> | undefined
-        constructor(file: string, text: string, uploader: User, tags?: Array<string>) {
-            this.file = file;
-            this.text = text;
-            this.uploader = uploader;
-            if (tags) this.tags = tags;
-            console.log(file)
-        }
+        tags: Array<string>
+
+		constructor() {
+			this.image = new myImage();
+			this.text = "";
+			this.uploader = new User();
+			this.tags = []
+		}
     }
 
     class User {
         name: string;
         password: string;
-        icon: string;
-        status: string;
-        constructor(name: string, password: string, icon: string, status: string) {
-            this.name = name;
-            this.password = password;
-            this.icon = icon;
-            this.status = status;
+
+		constructor() {
+			this.name = ""
+			this.password = ""
+		}
+    }
+
+	class myImage {
+        url: string;
+        alt: string;
+
+		constructor() {
+			this.url = ""
+			this.alt = ""
+		}
+    }
+    
+    //Variables
+    let posts: Array<Post> = $state([])
+    let currUser: User = new User()
+    currUser.name = "SampleUser"
+
+    //Dialogs
+    let uploadDialog: any
+    let overlay: any
+
+    //Functions
+
+    //Takes a dialog as an argument; opens that dialog and the overlay.
+    function open(dialog: any) {
+        console.log("opened")
+        overlay.open(dialog);
+        dialog.open();
+    }
+
+    //Takes a dialog as an argument; closes that dialog and the overlay.
+    function close(dialog: any, shouldSave: boolean) {
+        console.log("closed")
+        if (shouldSave) {
+            console.log("are you going to save")
+        } else {
+            overlay.close();
+            dialog.close();
         }
     }
 
-    function placeholderUser(): User {
-        return new User("Name", "Password", "Icon", "Status")
-    }
 
-    let files: FileList = $state()
-    var currText: string = $state("")
-    var uploads: Array<Upload> = $state([])
 
-    function clearFile() {
-        files = new DataTransfer().files
+    //Temp - Submits the current Image
+    function submitPost() {
+        uploadDialog.setUser(currUser)
+        posts.push(uploadDialog.getDraft())
     }
-    function submitFile() {
-        console.log(files[0].webkitRelativePath + " " + files[0].name)
-        uploads.push(new Upload(files[0].webkitRelativePath, "text", placeholderUser(), ['tag']))
-        clearFile()
-    }
+    
+
 </script>
-    <div class="bg-lime-200 m-5 p-5">
-        <input accept="image/png" type="file" bind:files={files}>
-        <input type="text" bind:value={currText}>
-        <button onclick={submitFile}>submit</button>
-        {#each uploads as upload}
-            <div style="background: url({upload.file}); background-size: cover; background-position: center; width: 100px; height: 100px"></div>
-            <p>{upload.file}eee</p>
+    <div class="bg-lime-300 m-5 p-5">
+        {#each posts as post}
+            <PostComponent>
+                Uploaded bt: {post.uploader.name}
+                Caption: {post.text} <br>
+                <img src={post.image.url} height="100px" width="100px" alt={post.image.alt}>
+            </PostComponent>
         {/each}
+
+        <button onclick={() => open(uploadDialog)}>hi</button>
     </div>
 
-    <UploadDialog></UploadDialog>
-
+    <button onclick={() => close(overlay.getOpened(), false)}>
+        <Overlay bind:this={overlay}></Overlay>
+    </button>
+    <UploadDialog bind:this={uploadDialog}>
+        
+        <button onclick={submitPost}>Submit</button>
+    </UploadDialog>
+    
