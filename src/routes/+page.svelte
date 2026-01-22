@@ -6,13 +6,12 @@
 
 
     class Post {
-        image: myImage;
+        image: string;
         text: string;
         uploader: User;
         tags: Array<string>
 
 		constructor() {
-			this.image = new myImage();
 			this.text = "";
 			this.uploader = new User();
 			this.tags = []
@@ -26,16 +25,6 @@
 		constructor() {
 			this.name = ""
 			this.password = ""
-		}
-    }
-
-	class myImage {
-        url: string;
-        alt: string;
-
-		constructor() {
-			this.url = ""
-			this.alt = ""
 		}
     }
     
@@ -83,7 +72,7 @@
             <PostComponent>
                 Uploaded bt: {post.uploader.name}
                 Caption: {post.text} <br>
-                <img src={post.image.url} height="100px" width="100px" alt={post.image.alt}>
+                <img src={post.image} height="100px" width="100px" alt="">
             </PostComponent>
         {/each}
 
