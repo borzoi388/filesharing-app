@@ -4,9 +4,10 @@
     import Overlay from "../components/DialogOverlay.svelte"
     import PostComponent from "../components/PostComponent.svelte"
 
+    //Classes and Types
 
     class Post {
-        image: string;
+        image: myImage;
         text: string;
         uploader: User;
         tags: Array<string>
@@ -15,6 +16,7 @@
 			this.text = "";
 			this.uploader = new User();
 			this.tags = []
+            this.image = { url: '', height: 0, width: 0 }
 		}
     }
 
@@ -27,6 +29,8 @@
 			this.password = ""
 		}
     }
+
+    type myImage = { url: string; height: number; width: number }
     
     //Variables
     let posts: Array<Post> = $state([])
@@ -41,14 +45,12 @@
 
     //Takes a dialog as an argument; opens that dialog and the overlay.
     function open(dialog: any) {
-        console.log("opened")
         overlay.open(dialog);
         dialog.open();
     }
 
     //Takes a dialog as an argument; closes that dialog and the overlay.
-    function close(dialog: any, shouldSave: boolean) {
-        console.log("closed")
+    function close(dialog: any, shouldSave?: number) {
         if (shouldSave) {
             console.log("are you going to save")
         } else {
@@ -63,6 +65,7 @@
     function submitPost() {
         uploadDialog.setUser(currUser)
         posts.push(uploadDialog.getDraft())
+        close(uploadDialog, 1)
     }
     
 
@@ -70,13 +73,14 @@
     <div class="bg-lime-300 m-5 p-5">
         {#each posts as post}
             <PostComponent>
-                Uploaded bt: {post.uploader.name}
+                Uploaded by: {post.uploader.name} <br>
                 Caption: {post.text} <br>
-                <img src={post.image} height="100px" width="100px" alt="">
+                <img src={post.image.url} height={post.image.height} width={post.image.width} alt=""> <br>
+                Tags: {#each post.tags as tag} <span>{tag}, </span>{/each}
             </PostComponent>
         {/each}
 
-        <button onclick={() => open(uploadDialog)}>hi</button>
+        <button onclick={() => open(uploadDialog)}>Upload post</button>
     </div>
 
     <button onclick={() => close(overlay.getOpened(), false)}>

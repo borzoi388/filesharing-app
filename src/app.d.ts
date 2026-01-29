@@ -33,15 +33,7 @@ declare global {
 		}
     }
 
-	public class myImage {
-        url: string;
-        alt: string;
-
-		constructor() {
-			this.url = ""
-			this.alt = ""
-		}
-    }
+	public type myImage = { url: string, height: number, width: number }
 }
 
 export {};

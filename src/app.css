@@ -2,4 +2,13 @@
 
 *{
     font-family:monospace;
+    color: var(--color-indigo-900);
+}
+
+input {
+    box-sizing: border-box;
+}
+
+.imgDisplay {
+    background-color: var(--color-yellow-200);
 }
